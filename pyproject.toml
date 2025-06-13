@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "genplot"
+description = "Plotting gendered IPEDS data"
+requires-python = ">=3.13.3"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+version = "1.0"
+authors = [{"name" = "Ravan Hawrami", "email" = "ravan@aibm.org"}]
+readme = {"file" = "README.md", content-type = "text/markdown"}
+dependencies = ["pandas", "numpy", "plotly", "requests", "bs4", "dotenv","genpeds==1.0.2"]
