@@ -6,7 +6,7 @@ import re
 from bs4 import BeautifulSoup
 
 from .plot_structures import THEME, GENDER_SPLIT_SCALE, GRADUATION_RATE_SCALE, ACCEPTANCE_RATE_SCALE, EARNINGS_SCALE
-from .utils import CleanForPlot
+from .utils import CleanForPlot, int_value_handler
 from .earnings import Earnings
 
 '''
@@ -38,7 +38,7 @@ MM_MAP = {
         # sizing[0] = sizing_var, sizing[2] is the df[sizing_var].apply() function
         'sizing': ['tot_enrolled',lambda x: np.median([8,x/300,30])],
         # sizing cutoff for schools to show
-        'sizing_cutoff': 500,
+        'sizing_cutoff': 100,
         # specification[specification] = spec label name
         'specification': {},
         'hover_text': ('<b><u>{name}</u></b><br>' +
@@ -98,7 +98,7 @@ MM_MAP = {
             'mean': ['mean','<b>Male Mean Earnings</b><br>(6 Years After Enroll)',EARNINGS_SCALE]
         },
         'sizing': ['tot_enrolled',lambda x: np.median([8,x/300,30])], # we'll be merging with admissions
-        'sizing_cutoff': 500,
+        'sizing_cutoff': 100,
         'specification': {},
         'hover_text': ('<b><u>{name}</u></b><br>' +
                         '(<i>{city}, {state}</i>)<br>' +
@@ -185,6 +185,7 @@ class MultiMap:
                             '''
 
             soup.body.append(BeautifulSoup(search_script,'html.parser'))
+
             with open(fpath,'w') as plotf:
                 plotf.write(str(soup))
         else:
@@ -295,35 +296,36 @@ class MultiMap:
             if subject == 'admissions':
                 hvtxt = hover_temp.format(
                     rec_yr=yr, name=nm, city=cty, state=st,
-                    men_app=int(r['men_applied']), men_accepted=int(r['men_admitted']), men_accept_rate=round(r['accept_rate_men'],1),
-                    women_accept_rate=round(r['accept_rate_women'],1), men_accept_share=round(r['men_admitted_share'],1), men_apply_share=round(r['men_applied_share'],1),
+                    men_app=int_value_handler(r['men_applied']), men_accepted=int_value_handler(r['men_admitted']), men_accept_rate=int_value_handler(r['accept_rate_men']),
+                    women_accept_rate=int_value_handler(r['accept_rate_women']), 
+                    men_accept_share=int_value_handler(r['men_admitted_share']), men_apply_share=int_value_handler(r['men_applied_share']),
                     year0 = years_iter[0], year1 = years_iter[1], year2 = years_iter[2],
-                    year0_rate = round(v_map[0],1) if isinstance(v_map[0],np.float64) else v_map[0],
-                    year1_rate = round(v_map[1],1) if isinstance(v_map[1],np.float64) else v_map[1], 
-                    year2_rate = round(v_map[2],1) if isinstance(v_map[2],np.float64) else v_map[2]
+                    year0_rate = int_value_handler(v_map[0]),
+                    year1_rate = int_value_handler(v_map[1]), 
+                    year2_rate = int_value_handler(v_map[2])
                 )
             elif subject == 'enrollment':
                 hvtxt = hover_temp.format(
                     rec_yr=yr, name=nm, city=cty, state=st,
-                    totmen = int(r['totmen']), totwomen = int(r['totwomen']),
-                    totmen_share = round(r['totmen_share'],1),
+                    totmen = int_value_handler(r['totmen']), totwomen = int_value_handler(r['totwomen']),
+                    totmen_share = int_value_handler(r['totmen_share']),
                     year0 = years_iter[0], year1 = years_iter[1], year2 = years_iter[2], year3 = years_iter[3],
-                    year0_rate = round(v_map[0],1) if isinstance(v_map[0],np.float64) else v_map[0],
-                    year1_rate = round(v_map[1],1) if isinstance(v_map[1],np.float64) else v_map[1], 
-                    year2_rate = round(v_map[2],1) if isinstance(v_map[2],np.float64) else v_map[2],
-                    year3_rate = round(v_map[3],1) if isinstance(v_map[2],np.float64) else v_map[3]
+                    year0_rate = int_value_handler(v_map[0]),
+                    year1_rate = int_value_handler(v_map[1]), 
+                    year2_rate = int_value_handler(v_map[2]),
+                    year3_rate = int_value_handler(v_map[3])
                 )
             elif subject == 'graduation':
                 yr_lag = yr - 6 if specification == 'bach' else yr - 3
                 hvtxt = hover_temp.format(
                     rec_yr=yr, name=nm, city=cty, state=st, rec_yr_lag = yr_lag,
-                    men_grad = int(r['totmen_graduated']),
-                    male_grad_rate = round(r['gradrate_totmen'],1), female_grad_rate = round(r['gradrate_totwomen'],1),
-                    diff_grad = round(r['gradrate_totmen'] - r['gradrate_totwomen'],1),
+                    men_grad = int_value_handler(r['totmen_graduated']),
+                    male_grad_rate = int_value_handler(r['gradrate_totmen']), female_grad_rate = int_value_handler(r['gradrate_totwomen']),
+                    diff_grad = int_value_handler(r['gradrate_totmen'],r['gradrate_totwomen'],'subtract'),
                     year0 = years_iter[0], year1 = years_iter[1], year2 = years_iter[2],
-                    year0_rate = round(v_map[0],1) if isinstance(v_map[0],np.float64) else v_map[0],
-                    year1_rate = round(v_map[1],1) if isinstance(v_map[1],np.float64) else v_map[1], 
-                    year2_rate = round(v_map[2],1) if isinstance(v_map[2],np.float64) else v_map[2]
+                    year0_rate = int_value_handler(v_map[0]),
+                    year1_rate = int_value_handler(v_map[1]), 
+                    year2_rate = int_value_handler(v_map[2])
                 )
             else:
                 hvtxt = 'TO DO'
@@ -436,9 +438,9 @@ class MultiMap:
             st = r['state']
             hvtxt = hover_temp.format(
                 name=nm, city=cty, state=st,spec=var_alias,
-                male_earn=int(r['male_earn']),
-                female_earn=int(r['female_earn']) if r['female_earn'] is not None else 'NA',
-                diff_earn=(int(r['male_earn'] - r['female_earn']))
+                male_earn=int_value_handler(r['male_earn']),
+                female_earn=int_value_handler(r['female_earn']),
+                diff_earn=(int_value_handler(r['male_earn'],r['female_earn'],'subtract'))
             )
             hovertext_arr.append(hvtxt)
         #color bar and marker color
@@ -466,7 +468,6 @@ class MultiMap:
         bar_vals = [i for i in sorted([0,25,50,75,99])]
         bar_text = {i: f'${int(reverse_norm(i)//1000 * 1000)}' for i in bar_vals}
 
-        print(f'earnings, None: {len(df)}')
         # BUILD DAT
         # scattergeo dat
         frm_dat= go.Scattergeo(
@@ -504,7 +505,7 @@ class MultiMap:
                                                     'bordercolor': 'black',
                                                     'font': {'color': '#1e4a4a'}},
                                         showlegend=False,
-                                        margin={sd:50 if sd=='t' else 0 for sd in ['pad','l','r','t','b']}))
+                                        margin={sd:70 if sd=='t' else 0 for sd in ['pad','l','r','t','b']}))
         self.frames.append(frm)
     
     def build_multimap(self,
@@ -578,12 +579,3 @@ def build_map(most_recent_year=2023,
                       notes=map_notes) # figure note
     
     mm.viz_to_html(fpath=fpath,add_search_bar=True) # convert plotly Figure object to html, add search bar
-
-
-
-    
-    
-    
-
-        
-    

@@ -1,4 +1,4 @@
-from .utils import CleanForPlot
+from .utils import CleanForPlot, int_value_handler
 from .earnings import Earnings
 
 '''
@@ -9,32 +9,32 @@ using the (aptly named) DataTable Javascript library
 COLS2KEEP = {
     'admissions': {
         'name': 'School','year': 'Year','id': 'ID','city': 'City','state': 'State',
-        'tot_enrolled': 'FirstYearEnrollment','men_enrolled': 'FirstYearMaleEnrollment', 'men_admitted': 'MaleAdmittees',
-        'men_applied': 'MaleApplicants', 'men_applied_share': 'MaleApplicantShare', 'men_admitted_share': 'MaleAdmittedShare',
+        'tot_enrolled': 'FirstYearEnroll','men_enrolled': 'FirstYearMaleEnroll', 'men_admitted': 'MaleAdmittees',
+        'men_applied': 'MaleApplicants', 'men_applied_share': 'MaleApplicantShare', 'men_admitted_share': 'MaleAdmitShare',
         'accept_rate_men': 'MaleAdmitRate','accept_rate_women': 'FemaleAdmitRate',
         'yield_rate_men': 'MaleYieldRate','yield_rate_women': 'FemaleYieldRate',
     },
     'enrollment_U': {
         'name': 'School','year': 'Year','id': 'ID','city': 'City','state': 'State',
-        'totmen':'TotalMaleEnrollment','totwomen':'TotalFemaleEnrollment',
-        'totmen_share':'TotalMaleEnrollmentShare'
+        'totmen':'MaleEnrollment','totwomen':'FemaleEnrollment',
+        'totmen_share':'MaleEnrollShare'
     },
     'enrollment_G': {
         'name': 'School','year': 'Year','id': 'ID','city': 'City','state': 'State',
-        'totmen':'TotalMaleEnrollment','totwomen':'TotalFemaleEnrollment',
-        'totmen_share':'TotalMaleEnrollmentShare'
+        'totmen':'MaleEnrollment','totwomen':'FemaleEnrollment',
+        'totmen_share':'MaleEnrollShare'
     },
     'graduation_assc': {
         'name': 'School','year': 'Year','id': 'ID','city': 'City','state': 'State',
-        'totmen': 'MenInCohort','totwomen': 'WomenInCohort', 
-        'totmen_graduated': 'MenGraduatedInCohort', 'totwomen_graduated': 'WomenGraduatedInCohort',
-        'gradrate_totmen':'MaleGraduationRate','gradrate_totwomen': 'FemaleGraduationRate',
+        'totmen': 'MaleCohort','totwomen': 'FemaleCohort', 
+        'totmen_graduated': 'MaleGrads', 'totwomen_graduated': 'FemaleGrads',
+        'gradrate_totmen':'MaleGradRate','gradrate_totwomen': 'FemaleGradRate',
     },
     'graduation_bach': {
         'name': 'School','year': 'Year','id': 'ID','city': 'City','state': 'State',
-        'totmen': 'MenInCohort','totwomen': 'WomenInCohort', 
-        'totmenuated': 'MenGraduatedInCohort', 'totwomenuated': 'WomenGraduatedInCohort',
-        'gradrate_totmen':'MaleGraduationRate','gradrate_totwomen': 'FemaleGraduationRate',
+        'totmen': 'MaleCohort','totwomen': 'FemaleCohort', 
+        'totmen_graduated': 'MaleGrads', 'totwomen_graduated': 'FemaleGrads',
+        'gradrate_totmen':'MaleGradRate','gradrate_totwomen': 'FemaleGradRate',
     }
 }
 
@@ -88,7 +88,7 @@ class EdDataTable:
             df = df.rename(columns=COLS2KEEP[i])
             for col in df.columns:
                 if col not in ['Year','ID','School','City','State']:
-                    df[col] = df[col].round(1)
+                    df[col] = df[col].apply(int_value_handler)
                     if 'Share' in col or 'Rate' in col:
                         df[col] = df[col].astype(str) + '%'
             self.dataframes[i] = df
@@ -113,7 +113,7 @@ class EdDataTable:
         earn_df['FemaleEarnings'] = earn_df['FemaleEarnings'] * (inflation_adjust / 116.11)
         # round now
         for col in ['MaleEarnings','FemaleEarnings']:
-            earn_df[col] = '$' + earn_df[col].round(1).astype(str)
+            earn_df[col] = '$' + earn_df[col].apply(int_value_handler).astype(str)
         self.dataframes['earnings'] = earn_df
         
     

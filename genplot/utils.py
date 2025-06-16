@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import plotly.graph_objects as go
 from genpeds import Admissions, Enrollment, Completion, Graduation
 
@@ -127,3 +128,31 @@ class CleanForPlot:
          'iframe_connected', 'sphinx_gallery', 'sphinx_gallery_png']
         '''
         self.viz.show(renderer=render) # shows the plot
+
+
+def int_value_handler(x=None, y=None, opr='subtract'):
+    '''returns proper integer conversion value'''
+    
+    if pd.isna(x) or isinstance(x, str):
+        val = 'NA'
+    else:
+        val = int(x)
+    
+    if y is not None:  
+        if pd.isna(y) or isinstance(y, str):
+            val2 = 'NA'
+        else:
+            val2 = int(y)
+        
+        if val != 'NA' and val2 != 'NA':
+            if opr == 'subtract':
+                return val - val2
+            elif opr == 'add':
+                return val + val2
+            else:
+                raise ValueError('opr should be either "add" or "subtract"')
+        else:
+            return 'NA'
+    else:
+        return val
+

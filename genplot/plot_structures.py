@@ -3,7 +3,7 @@ import plotly.graph_objects as go
 '''
 In this module, we define our plot structure:
 - the map settings, font, etc.
-- the color scales
+- the color scales for each frame
 '''
 
 '''
