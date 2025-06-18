@@ -3,4 +3,4 @@
 .env
 *egg*/
 build/
-__pychache__/
+__pycache__/

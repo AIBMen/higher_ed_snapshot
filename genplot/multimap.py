@@ -6,7 +6,7 @@ import re
 from bs4 import BeautifulSoup
 
 from .plot_structures import THEME, GENDER_SPLIT_SCALE, GRADUATION_RATE_SCALE, ACCEPTANCE_RATE_SCALE, EARNINGS_SCALE
-from .utils import CleanForPlot, int_value_handler
+from .utils import CleanForPlot, int_value_handler, wtd_quantile
 from .earnings import Earnings
 
 '''
@@ -57,7 +57,7 @@ MM_MAP = {
         'outcome_var': {
             'male_enrollment_share': ['totmen_share','<b>Male Enrollment Share</b><br>({})',GENDER_SPLIT_SCALE],
         },
-        'sizing': ['tot',lambda x: np.median([8,x/750,30])],
+        'sizing': ['tot',lambda x: np.median([8,x/1500,30])],
         'sizing_cutoff': 2000,
         'specification': {'undergrad': 'Undergraduate','grad': 'Graduate'},
         'hover_text': ('<b><u>{name}</u></b><br>' +
@@ -332,11 +332,17 @@ class MultiMap:
             hovertext_arr.append(hvtxt)
         # color bar
         # find weighted median of the marker var
-        wtmed = int(np.median(
-            np.sum(df['outcome_var'] * df[sizing_var]) / np.sum(df[sizing_var])
-        ))
-        bar_vals = [i for i in sorted([0,25,50,75,100,wtmed])]
-        bar_text = {i: f'<b>Median ({i}%)' if i == wtmed else f'{i}%' for i in bar_vals}
+        wtmed = wtd_quantile(df,'outcome_var',sizing_var,1/2)
+        wtmed = int(wtmed)
+        bar_vals = [i for i in sorted([26,51,76,99,wtmed])]
+        bar_text = {}
+        for i in bar_vals:
+            if i == wtmed:
+                bar_text[i] = f'<b>Median ({i}%)'
+            elif i == 99:
+                bar_text[i] = f'{i+1}%'
+            else:
+                bar_text[i] = f'{i-1}%'
         # BUILD DAT
         # scattergeo dat
         frm_dat= go.Scattergeo(
@@ -573,7 +579,7 @@ def build_map(most_recent_year=2023,
     mm.build_frame(subject='enrollment',specification='grad', outcome_var='male_enrollment_share') # Enrollment (Grad)
     mm.build_frame(subject='graduation',specification='bach', outcome_var='male_graduation_rate') # Graduation (Bachelor's)
     mm.build_frame(subject='graduation',specification='assc', outcome_var='male_graduation_rate') # Graduation (Associate's)
-    mm.build_earnings_frame(api_key=collescorecard_key,outcome_var='median',inflation_adjust=inflation_adjust) # Earnings (6-years after enrollment)
+    # mm.build_earnings_frame(api_key=collescorecard_key,outcome_var='median',inflation_adjust=inflation_adjust) # Earnings (6-years after enrollment)
 
     mm.build_multimap(title=map_title, # build map, title
                       notes=map_notes) # figure note

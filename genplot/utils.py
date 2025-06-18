@@ -156,3 +156,20 @@ def int_value_handler(x=None, y=None, opr='subtract'):
     else:
         return val
 
+def wtd_quantile(df,var,weight_var,quantile):
+    '''calculates a weighted quantile (decimal), given 
+       a dataframe, main var, weight var, and quantile (e.g., 1/2 is median)'''
+    df = df.loc[df[var].notnull() & df[weight_var].notnull()]
+    var_arr = df[var].to_numpy()
+    weight_arr = df[weight_var].to_numpy()
+
+    srt_idx = np.argsort(var_arr)
+    srt_dat = var_arr[srt_idx]
+    srt_wt = weight_arr[srt_idx]
+
+    cum_wt = np.cumsum(srt_wt)
+    totwt = np.sum(srt_wt)
+
+    cutoff = totwt * quantile
+    cutoff_idx = np.searchsorted(cum_wt,cutoff,side='left')
+    return srt_dat[cutoff_idx]
