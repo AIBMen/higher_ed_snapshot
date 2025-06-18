@@ -173,3 +173,19 @@ def wtd_quantile(df,var,weight_var,quantile):
     cutoff = totwt * quantile
     cutoff_idx = np.searchsorted(cum_wt,cutoff,side='left')
     return srt_dat[cutoff_idx]
+
+def percentile_formatter(arr,val)->str:
+    '''returns formatted string of percentile'''
+    percentile = sum(arr <= val) / len(arr) * 100
+    percentile = str(int_value_handler(percentile))
+    if percentile == '100':
+        percentile = '99'
+    if percentile[-1] == '1':
+        formatter = 'st'
+    elif percentile[-1] == '2':
+        formatter = 'nd'
+    elif percentile[-1] == '3':
+        formatter = 'rd'
+    else:
+        formatter = 'th'
+    return f'{percentile}{formatter}'

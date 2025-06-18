@@ -13,7 +13,7 @@ classifiers = [
 version = "1.0"
 authors = [{"name" = "Ravan Hawrami", "email" = "ravan@aibm.org"}]
 readme = {"file" = "README.md", content-type = "text/markdown"}
-dependencies = ["pandas", "numpy", "plotly", "requests", "bs4", "dotenv","genpeds==1.0.2"]
+dependencies = ["pandas", "numpy", "plotly", "requests", "bs4", "dotenv","genpeds"]
 
 [tool.setuptools]
 packages = { find = { include = ["genplot"], exclude = ["notebooks"] } }

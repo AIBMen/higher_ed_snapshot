@@ -91,7 +91,8 @@ class EdDataTable:
                     df[col] = df[col].apply(int_value_handler)
                     if 'Share' in col or 'Rate' in col:
                         df[col] = df[col].astype(str) + '%'
-            self.dataframes[i] = df
+            df = df.sort_values(by='Year',ignore_index=True)
+            self.dataframes[i] = df.drop_duplicates()
         # add earnings now
         earn = Earnings(api_key=earnings_api_key)
         earn.get_wages(wage_var='median',poplimit=500)
@@ -114,7 +115,7 @@ class EdDataTable:
         # round now
         for col in ['MaleEarnings','FemaleEarnings']:
             earn_df[col] = '$' + earn_df[col].apply(int_value_handler).astype(str)
-        self.dataframes['earnings'] = earn_df
+        self.dataframes['earnings'] = earn_df.drop_duplicates()
         
     
     def generate_datatable(self,out_path=''):
@@ -124,8 +125,8 @@ class EdDataTable:
         '''
         cfg = {
             'admissions': ('Admissions','Source: NCES IPEDS.'),
-            'enrollment_U': ('Enrollment (Undergrad)','Source: NCES IPEDS.'),
-            'enrollment_G': ('Enrollment (Grad)','Source: NCES IPEDS.'),
+            'enrollment_U': ('Enrollment (Undergrad)','Source: NCES IPEDS. Note: Enrollment includes total part-time and full-time enrollment.'),
+            'enrollment_G': ('Enrollment (Grad)','Source: NCES IPEDS. Note: Enrollment includes total part-time and full-time enrollment. "Graduate" includes graduate and first-professional enrollment.'),
             'graduation_bach': ("Graduation (Bach.)",'Source: NCES IPEDS. Note: Graduation rates measure the share of men/women who graduated within six years of enrollment'),
             'graduation_assc': ("Graduation (Assc.)",'Source: NCES IPEDS. Note: Graduation rates measure the share of men/women who graduated within three years of enrollment.'),
             'earnings': ("Median Earnings",'Source: College Scorecard. Note: Median Earnings were taken in 2020 and 2021, six years after students first enrolled. Earnings data were taken from individuals that received federal aid, were working, and were not enrolled in school. Earnings were adjusted to 2025 dollars using the PCE Chain-Type Price Index.')

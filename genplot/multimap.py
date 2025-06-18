@@ -6,7 +6,7 @@ import re
 from bs4 import BeautifulSoup
 
 from .plot_structures import THEME, GENDER_SPLIT_SCALE, GRADUATION_RATE_SCALE, ACCEPTANCE_RATE_SCALE, EARNINGS_SCALE
-from .utils import CleanForPlot, int_value_handler, wtd_quantile
+from .utils import CleanForPlot, int_value_handler, wtd_quantile, percentile_formatter
 from .earnings import Earnings
 
 '''
@@ -50,7 +50,7 @@ MM_MAP = {
                         '<b><u>Male Acceptance Rates</u></b>:<br>' +
                         '<b>{year0}</b>: {year0_rate}%<br>' +
                         '<b>{year1}</b>: {year1_rate}%<br>' +
-                        '<b>{year2}</b>: {year2_rate}%<br>')
+                        '<b>{year2}</b>: {year2_rate}% ({perc} perc.)<br>')
     },
     # enrollment
     'enrollment': {
@@ -65,11 +65,11 @@ MM_MAP = {
                         'In {rec_yr}, <b>{totmen} men</b> and <b>{totwomen} women</b> were<br>' +
                         'enrolled at {name}, meaning that<br>' +
                         'men made made up <b>{totmen_share}%</b> of total enrollment.<br><br>' +
-                        '<b><u>Male Graduation Rates</u></b>:<br>' +
+                        '<b><u>Male Enrollment Rates</u></b>:<br>' +
                         '<b>{year0}</b>: {year0_rate}%<br>' +
                         '<b>{year1}</b>: {year1_rate}%<br>' +
                         '<b>{year2}</b>: {year2_rate}%<br>' +
-                        '<b>{year3}</b>: {year3_rate}%<br>')
+                        '<b>{year3}</b>: {year3_rate}% ({perc} perc.)<br>')
     },
     # graduation
     'graduation': {
@@ -89,7 +89,7 @@ MM_MAP = {
                         '<b><u>Male Graduation Rates</u></b>:<br>' +
                         '<b>{year0}</b>: {year0_rate}%<br>' +
                         '<b>{year1}</b>: {year1_rate}%<br>' +
-                        '<b>{year2}</b>: {year2_rate}%<br>')
+                        '<b>{year2}</b>: {year2_rate}% ({perc} perc.)<br>')
     },
     # earnings
     'earnings': {
@@ -104,8 +104,8 @@ MM_MAP = {
                         '(<i>{city}, {state}</i>)<br>' +
                         'For students who first enrolled at {name}<br>' +
                         'in 2013-2015, the <b>{spec} male student</b> was earning <b>${male_earn}</b><br>' +
-                        'six years later, and the <b>{spec} female student</b> was earning<br>'
-                        '<b>${female_earn}</b> (in 2025 dollars). This means the difference in<br>' +
+                        'six years later ({perc} perc.), and the <b>{spec} female student</b> was<br>'
+                        'earning <b>${female_earn}</b> (in 2025 dollars). This means the difference in<br>' +
                         'earnings was <b>${diff_earn}</b>.')
     }
 }
@@ -302,7 +302,8 @@ class MultiMap:
                     year0 = years_iter[0], year1 = years_iter[1], year2 = years_iter[2],
                     year0_rate = int_value_handler(v_map[0]),
                     year1_rate = int_value_handler(v_map[1]), 
-                    year2_rate = int_value_handler(v_map[2])
+                    year2_rate = int_value_handler(v_map[2]),
+                    perc = percentile_formatter(df['accept_rate_men'],r['accept_rate_men'])
                 )
             elif subject == 'enrollment':
                 hvtxt = hover_temp.format(
@@ -313,7 +314,8 @@ class MultiMap:
                     year0_rate = int_value_handler(v_map[0]),
                     year1_rate = int_value_handler(v_map[1]), 
                     year2_rate = int_value_handler(v_map[2]),
-                    year3_rate = int_value_handler(v_map[3])
+                    year3_rate = int_value_handler(v_map[3]),
+                    perc = percentile_formatter(df['totmen_share'],r['totmen_share'])
                 )
             elif subject == 'graduation':
                 yr_lag = yr - 6 if specification == 'bach' else yr - 3
@@ -325,7 +327,8 @@ class MultiMap:
                     year0 = years_iter[0], year1 = years_iter[1], year2 = years_iter[2],
                     year0_rate = int_value_handler(v_map[0]),
                     year1_rate = int_value_handler(v_map[1]), 
-                    year2_rate = int_value_handler(v_map[2])
+                    year2_rate = int_value_handler(v_map[2]),
+                    perc = percentile_formatter(df['gradrate_totmen'],r['gradrate_totmen'])
                 )
             else:
                 hvtxt = 'TO DO'
@@ -380,7 +383,7 @@ class MultiMap:
                                                     'bordercolor': 'black',
                                                     'font': {'color': '#1e4a4a'}},
                                         showlegend=False,
-                                        margin={sd:95 if sd=='t' else 0 for sd in ['pad','l','r','t','b']})
+                                        margin={sd:90 if sd=='t' else 0 for sd in ['pad','l','r','t','b']})
                                         )
         self.frames.append(frm)
     
@@ -446,7 +449,8 @@ class MultiMap:
                 name=nm, city=cty, state=st,spec=var_alias,
                 male_earn=int_value_handler(r['male_earn']),
                 female_earn=int_value_handler(r['female_earn']),
-                diff_earn=(int_value_handler(r['male_earn'],r['female_earn'],'subtract'))
+                diff_earn=(int_value_handler(r['male_earn'],r['female_earn'],'subtract')),
+                    perc = percentile_formatter(df['male_earn'],r['male_earn'])
             )
             hovertext_arr.append(hvtxt)
         #color bar and marker color
@@ -471,7 +475,7 @@ class MultiMap:
             (np.log(med_wage) - male_earn_min) / male_earn_diff
         )
         # f'<b> Median (${med_wage//1000 * 1000})' if i == med_wage_norm else
-        bar_vals = [i for i in sorted([0,25,50,75,99])]
+        bar_vals = [i for i in sorted([25,50,75,99])]
         bar_text = {i: f'${int(reverse_norm(i)//1000 * 1000)}' for i in bar_vals}
 
         # BUILD DAT
@@ -511,7 +515,7 @@ class MultiMap:
                                                     'bordercolor': 'black',
                                                     'font': {'color': '#1e4a4a'}},
                                         showlegend=False,
-                                        margin={sd:70 if sd=='t' else 0 for sd in ['pad','l','r','t','b']}))
+                                        margin={sd:90 if sd=='t' else 0 for sd in ['pad','l','r','t','b']}))
         self.frames.append(frm)
     
     def build_multimap(self,
@@ -579,7 +583,7 @@ def build_map(most_recent_year=2023,
     mm.build_frame(subject='enrollment',specification='grad', outcome_var='male_enrollment_share') # Enrollment (Grad)
     mm.build_frame(subject='graduation',specification='bach', outcome_var='male_graduation_rate') # Graduation (Bachelor's)
     mm.build_frame(subject='graduation',specification='assc', outcome_var='male_graduation_rate') # Graduation (Associate's)
-    # mm.build_earnings_frame(api_key=collescorecard_key,outcome_var='median',inflation_adjust=inflation_adjust) # Earnings (6-years after enrollment)
+    mm.build_earnings_frame(api_key=collescorecard_key,outcome_var='median',inflation_adjust=inflation_adjust) # Earnings (6-years after enrollment)
 
     mm.build_multimap(title=map_title, # build map, title
                       notes=map_notes) # figure note
