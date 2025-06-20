@@ -50,7 +50,7 @@ MM_MAP = {
                         '<b><u>Male Acceptance Rates</u></b>:<br>' +
                         '<b>{year0}</b>: {year0_rate}%<br>' +
                         '<b>{year1}</b>: {year1_rate}%<br>' +
-                        '<b>{year2}</b>: {year2_rate}% ({perc} perc.)<br>')
+                        '<b>{year2}</b>: {year2_rate}% (<b>{perc} percentile</b>)<br>')
     },
     # enrollment
     'enrollment': {
@@ -69,7 +69,7 @@ MM_MAP = {
                         '<b>{year0}</b>: {year0_rate}%<br>' +
                         '<b>{year1}</b>: {year1_rate}%<br>' +
                         '<b>{year2}</b>: {year2_rate}%<br>' +
-                        '<b>{year3}</b>: {year3_rate}% ({perc} perc.)<br>')
+                        '<b>{year3}</b>: {year3_rate}% (<b>{perc} percentile</b>)<br>')
     },
     # graduation
     'graduation': {
@@ -89,7 +89,7 @@ MM_MAP = {
                         '<b><u>Male Graduation Rates</u></b>:<br>' +
                         '<b>{year0}</b>: {year0_rate}%<br>' +
                         '<b>{year1}</b>: {year1_rate}%<br>' +
-                        '<b>{year2}</b>: {year2_rate}% ({perc} perc.)<br>')
+                        '<b>{year2}</b>: {year2_rate}% (<b>{perc} percentile</b>)<br>')
     },
     # earnings
     'earnings': {
@@ -104,9 +104,10 @@ MM_MAP = {
                         '(<i>{city}, {state}</i>)<br>' +
                         'For students who first enrolled at {name}<br>' +
                         'in 2013-2015, the <b>{spec} male student</b> was earning <b>${male_earn}</b><br>' +
-                        'six years later ({perc} perc.), and the <b>{spec} female student</b> was<br>'
+                        'six years later, and the <b>{spec} female student</b> was<br>'
                         'earning <b>${female_earn}</b> (in 2025 dollars). This means the difference in<br>' +
-                        'earnings was <b>${diff_earn}</b>.')
+                        'earnings was <b>${diff_earn}</b>.<br><br>' +
+                        '<b>Earnings Six Years After Enroll</b>: ${male_earn} (<b>{perc} percentile</b>)')
     }
 }
 
@@ -391,6 +392,11 @@ class MultiMap:
         )
         # frame
         sbttl = re.sub(r'\<br\>',' <b>', var_label)
+        if subject == 'graduation':
+            if specification == 'bach':
+                sbttl += ' (Six Years After Enrollment)'
+            else:
+                sbttl += ' (Three Years After Enrollment)'
         frm = go.Frame(data=frm_dat,
                        name=var_label,
                        layout=go.Layout(title={'subtitle': {'text': f'Currently viewing: <b>{sbttl}'}}, 
