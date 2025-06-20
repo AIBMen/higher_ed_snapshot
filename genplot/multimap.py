@@ -156,6 +156,22 @@ class MultiMap:
                         </div>
                          '''
             soup.body.insert(0, BeautifulSoup(search_box,'html.parser')) # add box
+            # resize the buttons
+            btn_resize = '''
+                        <style>
+                            .plotly .modebar-btn {
+                            width: 35px !important;
+                            height: 35px !important;
+                            }
+
+                            /* Optional: increase icon size */
+                            .plotly .modebar-btn > svg {
+                            width: 19px !important;
+                            height: 19px !important;
+                            }
+                            </style>
+                         '''
+            soup.head.insert(1, BeautifulSoup(btn_resize,'html.parser'))
             # get unique plot id
             plot_id = soup.find('div',class_='plotly-graph-div')['id']
             # Add search query opacity update
@@ -438,6 +454,8 @@ class MultiMap:
         # calculation is earnings * (125.58 / 116.11)
         df['male_earn'] = df['male_earn'] * (inflation_adjust / 116.11)
         df['female_earn'] = df['female_earn'] * (inflation_adjust / 116.11)
+        # Drop duplicates
+        df = df.drop_duplicates(subset=['id'])
 
         # HOVER LABELS
         hovertext_arr = []

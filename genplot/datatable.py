@@ -285,6 +285,31 @@ class EdDataTable:
                             left: 0;
                             z-index: 2; 
                             }}
+                            /* Override Bootstrap pagination styling */
+                            .pagination .page-item .page-link {{
+                                background-color: #06474D !important;
+                                border-color: #333333 !important;
+                                color: #ffffff !important;
+                            }}
+
+                            .pagination .page-item.active .page-link {{
+                                background-color: #06474D !important;
+                                border-color: #333333 !important;
+                                color: #AAC9B8 !important;
+                                z-index: 3;
+                            }}
+
+                            .pagination .page-item .page-link:hover {{
+                                background-color: #06474D !important;
+                                border-color: #333333 !important;
+                                color: #ffffff !important;
+                            }}
+
+                            .pagination .page-item.disabled .page-link {{
+                                background-color: #06474D !important;
+                                border-color: #333333 !important;
+                                color: #666666 !important;
+                            }}
                         </style>
                         </head>
                         <body class="p-4">
