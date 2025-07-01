@@ -14,7 +14,6 @@ MultiMap: a Plotly Scattergeo object with multiple frames for different higher e
 - Male Admissions Share
 - Male Enrollment Share (by level)
 - Male Graduation Rate (by level)
-- Male Degree Share (by level)
 - Male Earnings
 '''
 
@@ -143,6 +142,7 @@ class MultiMap:
         :param add_search_bar: bool that, when True, adds search bar to plot
         '''
         raw_plot = self.fig
+        raw_plot._config['responsive'] = True
         if add_search_bar:
             html_plot = pio.to_html(fig = raw_plot,
                                     auto_play=False,

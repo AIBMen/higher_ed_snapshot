@@ -198,6 +198,7 @@ class EdDataTable:
                                     {{ extend: 'excel', className: 'btn btn-sm btn-dt-teal' }}
                                 ],
                         pageLength: 25,
+                        responsive: true,
                         scrollX: true,
                         scrollY: '500px'
                     }});
@@ -223,7 +224,7 @@ class EdDataTable:
 
                         <!-- DataTables + Buttons CSS -->
                         <link
-                            href="https://cdn.datatables.net/v/bs5/dt-2.3.1/b-3.2.3/b-html5-3.2.3/b-print-3.2.3/datatables.min.css"
+                            href="https://cdn.datatables.net/v/bs5/dt-2.3.1/r-3.0.4/b-3.2.3/b-html5-3.2.3/b-print-3.2.3/datatables.min.css"
                             rel="stylesheet"
                         />
                         <style>
@@ -338,6 +339,7 @@ class EdDataTable:
                         </script>
                         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
                         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+                        <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
                         <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
                         <script>

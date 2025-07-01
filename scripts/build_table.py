@@ -29,9 +29,10 @@ inflation_adjust = float(inflation_adjust)
 
 # HTML output path
 out_path = os.getenv('TABLE_OUTPATH')
+out = os.path.join('docs',out_path)
 
 if __name__=='__main__':
     build_table(most_recent_year=most_rec_yr,
                 collescorecard_key=college_scorecard_key,
                 inflation_adjust=inflation_adjust,
-                fpath=out_path)
+                fpath=out)

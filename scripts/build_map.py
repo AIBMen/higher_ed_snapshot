@@ -37,6 +37,7 @@ notes = os.getenv('MAP_NOTE')
 
 # HTML output path
 out_path = os.getenv('MAP_OUTPATH')
+out = os.path.join('docs',out_path)
 
 
 if __name__=='__main__':
@@ -45,4 +46,4 @@ if __name__=='__main__':
               inflation_adjust=inflation_adjust,
               map_title=title,
               map_notes=notes,
-              fpath=out_path)
+              fpath=out)
