@@ -143,6 +143,7 @@ class MultiMap:
         '''
         raw_plot = self.fig
         raw_plot._config['responsive'] = True
+        raw_plot._layout['autosize'] = True
         if add_search_bar:
             html_plot = pio.to_html(fig = raw_plot,
                                     auto_play=False,
