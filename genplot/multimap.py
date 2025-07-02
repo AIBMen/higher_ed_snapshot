@@ -142,12 +142,15 @@ class MultiMap:
         :param add_search_bar: bool that, when True, adds search bar to plot
         '''
         raw_plot = self.fig
+
+
         if add_search_bar:
             html_plot = pio.to_html(fig = raw_plot,
                                     auto_play=False,
                                    include_plotlyjs='cdn',
                                    full_html=True,
-                                   config={'responsive': True})
+                                   config={'responsive': True,
+                                           'modeBarButtonsToRemove': ['select2d', 'lasso2d']})
             soup = BeautifulSoup(html_plot,'html.parser')
             # adding search box
             search_box = '''
@@ -164,7 +167,6 @@ class MultiMap:
                             height: 35px !important;
                             }
 
-                            /* Optional: increase icon size */
                             .plotly .modebar-btn > svg {
                             width: 19px !important;
                             height: 19px !important;
