@@ -197,7 +197,7 @@ class EdDataTable:
                                     {{ extend: 'csv',   className: 'btn btn-sm btn-dt-teal' }},
                                     {{ extend: 'excel', className: 'btn btn-sm btn-dt-teal' }}
                                 ],
-                        pageLength: 25,
+                        pageLength: 20,
                         responsive: true,
                         scrollX: true,
                         scrollY: '500px'
