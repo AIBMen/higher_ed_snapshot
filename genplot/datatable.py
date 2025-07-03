@@ -45,7 +45,8 @@ a queryable table of NCES IPEDS data
 '''
 class EdDataTable:
     '''Higher Ed Data Table'''
-    def __init__(self,most_recent_year):
+    def __init__(self,
+                 most_recent_year: int):
         '''JS DataTable
         
         :param most_recent_year: most recent year of data available
@@ -54,12 +55,12 @@ class EdDataTable:
         self.dataframes = {}
 
     def generate_df(self,
-                    earnings_api_key='COLLEGE_SCORECARD_KEY',
-                    inflation_adjust=125.58):
+                    earnings_api_key: str = 'COLLEGE_SCORECARD_KEY',
+                    inflation_adjust: float = 125.58) -> None:
         '''generates higher ed dataframe 
         
         :param earnings_api_key: College Scorecard API key string.
-        :param inflation_adjust: the PCE index for the most recent year. This will be divided
+        :param inflation_adjust: the PCE index for the most recent year (WITH 2017 BEING THE INDEX == 100 LEVEL). This will be divided
                                  by the 2022 index to bring 2022 estimates to modern dollars
         '''
         rcyr = self.most_recent_year
@@ -110,15 +111,17 @@ class EdDataTable:
         # INFLATION ADJUST, DATA ARE INFLATION ADJUSTED TO 2022 DOLLARS, NEED TO UPDATE TO 2025
         # We'll use the 2025 first quarter PCE
         # calculation is earnings * (125.58 / 116.11)
-        earn_df['MaleEarnings'] = earn_df['MaleEarnings'] * (inflation_adjust / 116.11)
-        earn_df['FemaleEarnings'] = earn_df['FemaleEarnings'] * (inflation_adjust / 116.11)
+        idx_22 = 116.11
+        earn_df['MaleEarnings'] = earn_df['MaleEarnings'] * (inflation_adjust / idx_22)
+        earn_df['FemaleEarnings'] = earn_df['FemaleEarnings'] * (inflation_adjust / idx_22)
         # round now
         for col in ['MaleEarnings','FemaleEarnings']:
             earn_df[col] = '$' + earn_df[col].apply(int_value_handler).astype(str)
         self.dataframes['earnings'] = earn_df.drop_duplicates()
         
     
-    def generate_datatable(self,out_path=''):
+    def generate_datatable(self,
+                           out_path: str = 'table.html') -> None:
         '''generates datatable, outputs html
         
         :out_path: output path for table html
@@ -354,10 +357,10 @@ class EdDataTable:
             dtf.write(dataTable)
             
 
-def build_table(most_recent_year=2023,
-                collescorecard_key='',
-                inflation_adjust=None,
-                fpath=''):
+def build_table(most_recent_year: int = 2023,
+                collescorecard_key: str = None,
+                inflation_adjust: float = None,
+                fpath: str = 'table.html') -> None:
     '''build IPEDS DataTable
     
     :param most_recent_year: most recent year of data available

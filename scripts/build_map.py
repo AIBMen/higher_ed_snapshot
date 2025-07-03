@@ -10,7 +10,7 @@ Build the map, output to html
 # get arguments
 # - most recent year of data
 # - College Scorecard key
-# - most recent year PCE index (pegged at 2017)
+# - most recent year PCE index (pegged at 2017 := 100 index)
 # - map title
 # - map notes
 # - html output path name

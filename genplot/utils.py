@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
+from typing import List, Dict, Union, Optional, Tuple, Any
 from genpeds import Admissions, Enrollment, Completion, Graduation
 
 '''
@@ -69,14 +70,17 @@ It takes in an inclusive year range in tuple form, or a single year
 '''
 class CleanForPlot:
     '''Data cleaning for plots.'''
-    def __init__(self,subject,years,poplimit):
+    def __init__(self,
+                 subject: str = None,
+                 years: Union[List[int], Tuple[int], int] = None,
+                 poplimit: int = None):
         '''Data cleaning for plots.
         
         :param subject::
          (*str*) plot subject. options include:<br>['admissions','enrollment','completion','graduation']
         
         :param years::
-         (*tuple* or *int*) year range or single year. ranges available vary by subject.
+         (*tuple*, *list* or *int*) year range or single year. ranges available vary by subject.
         
         :param poplimit::
          (*int*) population limit for schools to be included. populations include both men and women.
@@ -90,10 +94,11 @@ class CleanForPlot:
         self.c2k = self.plot_dict['cols_to_keep']
         self.viz = go.Figure()
     
-    def _run_data(self,**kwargs) -> pd.DataFrame:
+    def _run_data(self,
+                  **kwargs) -> pd.DataFrame:
         '''runs data, limits data by poplimit, and returns dataframe for a subject.
         
-        **kwargs are passed onto the  'run' method for each class. 
+        **kwargs are passed onto the 'run' method for each class. 
         '''
         df = self.cls(self.years).run(**kwargs) # get dat
 
@@ -117,7 +122,8 @@ class CleanForPlot:
         cols2keep = [col for col in self.c2k if col in df.columns]
         return df.loc[:, cols2keep]    
 
-    def data_viz(self,render='browser'):
+    def data_viz(self,
+                 render: str = 'browser') -> None:
         '''plots current figure.
         
         :param render: form of rendering. Options include:<br>
@@ -130,7 +136,9 @@ class CleanForPlot:
         self.viz.show(renderer=render) # shows the plot
 
 
-def int_value_handler(x=None, y=None, opr='subtract'):
+def int_value_handler(x: Any = None, 
+                      y: Any = None, 
+                      opr: str = 'subtract') -> Union[str,int]:
     '''returns proper integer conversion value'''
     
     if pd.isna(x) or isinstance(x, str):
@@ -156,7 +164,10 @@ def int_value_handler(x=None, y=None, opr='subtract'):
     else:
         return val
 
-def wtd_quantile(df,var,weight_var,quantile):
+def wtd_quantile(df: pd.DataFrame = None,
+                 var: str = None,
+                 weight_var: str = None,
+                 quantile: float = None) -> float:
     '''calculates a weighted quantile (decimal), given 
        a dataframe, main var, weight var, and quantile (e.g., 1/2 is median)'''
     df = df.loc[df[var].notnull() & df[weight_var].notnull()]
@@ -174,7 +185,8 @@ def wtd_quantile(df,var,weight_var,quantile):
     cutoff_idx = np.searchsorted(cum_wt,cutoff,side='left')
     return srt_dat[cutoff_idx]
 
-def percentile_formatter(arr,val)->str:
+def percentile_formatter(arr: Any = None,
+                         val: Union[float,int] = None) -> str:
     '''returns formatted string of percentile'''
     percentile = sum(arr <= val) / len(arr) * 100
     percentile = str(int_value_handler(percentile))

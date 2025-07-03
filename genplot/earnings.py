@@ -1,6 +1,7 @@
 import requests
 import us
 import json
+from typing import Dict, List, Any
 
 '''
 In this script, I define the Earnings class, which collects school-level earnings 
@@ -29,7 +30,8 @@ wage_var_dict = {
 
 class Earnings:
     '''Earnings data from colleges'''
-    def __init__(self,api_key=''):
+    def __init__(self,
+                 api_key: str = None):
         '''College Scorecard Earnings data.
         
         :param api_key: College Scorecard API key
@@ -37,7 +39,9 @@ class Earnings:
         self.api_key = api_key
         self.earnings_dat = None
 
-    def get_wages(self,wage_var='median',poplimit=300) -> dict:
+    def get_wages(self,
+                  wage_var: str = 'median',
+                  poplimit: int = 300) -> Dict[str,List[str]]:
         '''returns male and female wages for schools, all states, in dict format.
 
         Format follows...
@@ -100,7 +104,8 @@ class Earnings:
 
         self.earnings_dat = wage_data
 
-    def earnings_to_json(self, fpath = 'earnings.json'):
+    def earnings_to_json(self, 
+                         fpath: str = 'earnings.json') -> None:
          '''converts earnings data to json
          
          :param fpath: file path

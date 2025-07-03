@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import re
 from bs4 import BeautifulSoup
+from typing import List, Tuple, Union
 
 from .plot_structures import THEME, GENDER_SPLIT_SCALE, GRADUATION_RATE_SCALE, ACCEPTANCE_RATE_SCALE, EARNINGS_SCALE
 from .utils import CleanForPlot, int_value_handler, wtd_quantile, percentile_formatter
@@ -113,7 +114,8 @@ MM_MAP = {
 
 class MultiMap:
     '''multiple higher ed outcomes, all on one map'''
-    def __init__(self,most_recent_year):
+    def __init__(self,
+                 most_recent_year: int = None):
         '''MultiMap
         
         :param most_recent_year:
@@ -123,7 +125,8 @@ class MultiMap:
         self.frames = []
         self.fig = go.Figure()
     
-    def data_viz(self,render='browser'):
+    def data_viz(self,
+                 render: str = 'browser') -> None:
         '''plots current figure.
         
         :param render: form of rendering. Options include:<br>
@@ -135,7 +138,9 @@ class MultiMap:
         '''
         self.fig.show(renderer=render) # shows the plot
     
-    def viz_to_html(self,fpath='',add_search_bar=True):
+    def viz_to_html(self,
+                    fpath: str = None,
+                    add_search_bar: bool = True) -> None:
         '''converts current data viz to html
         
         :param fpath: output path for html file
@@ -209,7 +214,11 @@ class MultiMap:
         else:
             raw_plot.write_html(file=fpath,auto_play=False,include_plotlyjs='cdn')
 
-    def _get_obj(self,subject='enrollment',years=None,poplimit=0,**kwargs)->pd.DataFrame:
+    def _get_obj(self,
+                 subject: str = 'enrollment',
+                 years: Union[List[int], Tuple[int], int] = None,
+                 poplimit: int = 0,
+                 **kwargs) -> pd.DataFrame:
         '''returns pandas dataframe of requested data
         
         :param subject: IPEDS data subject string; e.g., 'enrollment'
@@ -221,10 +230,10 @@ class MultiMap:
         return obj
 
     def build_frame(self,
-                    subject=None,
-                    specification=None,
-                    outcome_var=None,
-                    rm_disk=False)->go.Frame:
+                    subject: str = None,
+                    specification: str = None,
+                    outcome_var: str = None,
+                    rm_disk: bool = False) -> go.Frame:
         '''build frame of male higher ed variable
         
         :param subject: frame subject.
@@ -411,9 +420,9 @@ class MultiMap:
         self.frames.append(frm)
     
     def build_earnings_frame(self,
-                            api_key = '',
-                            outcome_var=None,
-                            inflation_adjust=125.58)->go.Frame:
+                            api_key: str =  None,
+                            outcome_var: str = None,
+                            inflation_adjust: float = 125.58) -> go.Frame:
         '''build frame of earnings
 
         :api_key: College Scorecard API key string
@@ -544,8 +553,8 @@ class MultiMap:
         self.frames.append(frm)
     
     def build_multimap(self,
-                       title='',
-                       notes=''):
+                       title: str = None,
+                       notes: str = None) -> None:
         '''build multimap plot based on stored frames'''
         # CREATE BUTTON DROPDOWN
         tabs = [
@@ -586,12 +595,12 @@ class MultiMap:
         # update attr
         self.fig = fig
 
-def build_map(most_recent_year=2023,
-              collescorecard_key='',
-              inflation_adjust=None,
-              map_title='',
-              map_notes='',
-              fpath=''):
+def build_map(most_recent_year: int = 2023,
+              collescorecard_key: str = None,
+              inflation_adjust: float = None,
+              map_title: str = None,
+              map_notes: str = None,
+              fpath: str = None) -> None:
     '''builds map, downloads html to disk
     
     :param most_recent_year: most recent year of data available
