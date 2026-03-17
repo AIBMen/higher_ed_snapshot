@@ -108,9 +108,9 @@ class EdDataTable:
         earn_df = earn_df.rename(columns={'name': 'School','id': 'ID','city': 'City','state': 'State'}) # rename cols
          # filter out those with unknown male earnings
         earn_df = earn_df.loc[earn_df['MaleEarnings'].notnull()]
-        # INFLATION ADJUST, DATA ARE INFLATION ADJUSTED TO 2022 DOLLARS, NEED TO UPDATE TO 2025
-        # We'll use the 2025 first quarter PCE
-        # calculation is earnings * (125.58 / 116.11)
+        # INFLATION ADJUST, DATA ARE INFLATION ADJUSTED TO 2022 DOLLARS, NEED TO UPDATE TO 2026
+        # We'll use the January PCE
+        # calculation is earnings * (January PCE / 116.11)
         idx_22 = 116.11
         earn_df['MaleEarnings'] = earn_df['MaleEarnings'] * (inflation_adjust / idx_22)
         earn_df['FemaleEarnings'] = earn_df['FemaleEarnings'] * (inflation_adjust / idx_22)
@@ -132,7 +132,7 @@ class EdDataTable:
             'enrollment_G': ('Enrollment (Grad)','Source: NCES IPEDS. Note: Enrollment includes total part-time and full-time enrollment. "Graduate" includes graduate and first-professional enrollment.'),
             'graduation_bach': ("Graduation (Bach.)",'Source: NCES IPEDS. Note: Graduation rates measure the share of men/women who graduated within six years of enrollment'),
             'graduation_assc': ("Graduation (Assc.)",'Source: NCES IPEDS. Note: Graduation rates measure the share of men/women who graduated within three years of enrollment.'),
-            'earnings': ("Median Earnings",'Source: College Scorecard. Note: Median Earnings were taken in 2020 and 2021, six years after students first enrolled. Earnings data were taken from individuals that received federal aid, were working, and were not enrolled in school. Earnings were adjusted to 2025 dollars using the PCE Chain-Type Price Index.')
+            'earnings': ("Median Earnings",'Source: College Scorecard. Note: Median Earnings were taken in 2020 and 2021, six years after students first enrolled. Earnings data were taken from individuals that received federal aid, were working, and were not enrolled in school. Earnings were adjusted to 2026 dollars using the PCE Chain-Type Price Index.')
         }
         nav_tabs = ''
         tab_panes = ''

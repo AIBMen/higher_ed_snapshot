@@ -105,7 +105,7 @@ MM_MAP = {
                         'For students who first enrolled at {name}<br>' +
                         'in 2013-2015, the <b>{spec} male student</b> was earning <b>${male_earn}</b><br>' +
                         'six years later, and the <b>{spec} female student</b> was<br>'
-                        'earning <b>${female_earn}</b> (in 2025 dollars). This means the difference in<br>' +
+                        'earning <b>${female_earn}</b> (in 2026 dollars). This means the difference in<br>' +
                         'earnings was <b>${diff_earn}</b>.<br><br>' +
                         '<b>Earnings Six Years After Enroll</b>: ${male_earn} (<b>{perc} percentile</b>)')
     }
@@ -465,9 +465,9 @@ class MultiMap:
         df['female_earn'] = df['id'].map(female_earn_map)
         # filter out those with unknown male earnings
         df = df.loc[df['male_earn'].notnull()]
-        # INFLATION ADJUST, DATA ARE INFLATION ADJUSTED TO 2022 DOLLARS, NEED TO UPDATE TO 2025
-        # We'll use the 2025 first quarter PCE
-        # calculation is earnings * (125.58 / 116.11)
+        # INFLATION ADJUST, DATA ARE INFLATION ADJUSTED TO 2022 DOLLARS, NEED TO UPDATE TO 2026
+        # We'll use the 2026 January PCE
+        # calculation is earnings * (January PCE / 116.11)
         df['male_earn'] = df['male_earn'] * (inflation_adjust / 116.11)
         df['female_earn'] = df['female_earn'] * (inflation_adjust / 116.11)
         # Drop duplicates
